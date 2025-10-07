@@ -9,11 +9,14 @@ final class MovieQuizViewController: UIViewController {
         lazy var boldFont = UIFont (name:"YSDisplay-Bold", size: 23)
         yesButton.titleLabel?.font = baseFont
         noButton.titleLabel?.font = baseFont
+        textLabel.font = boldFont
+        counterLabel.font = baseFont
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 1
         imageView.layer.borderColor = UIColor.white.cgColor
-        imageView.layer.cornerRadius = 6
-        
+        imageView.layer.cornerRadius = 20
+        questionLabel.font = baseFont
+        setImageBorder(isAnswered: false)
     }
     private var correctAnswers = 0
     private var currentQuestionIndex = 0
@@ -23,6 +26,7 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet weak var textLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var noButton: UIButton!
+    @IBOutlet weak var questionLabel: UILabel!
     
     struct QuizQuestion {
         let image: String
@@ -84,28 +88,40 @@ final class MovieQuizViewController: UIViewController {
             correctAnswer: false)
     ]
     
-    @IBAction func yesButtonClicked(_ sender: Any) {
+    @IBAction private func yesButtonClicked(_ sender: Any) {
         let currentQuestion = questions[currentQuestionIndex]
         let givenAnswer = true
         
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
-   
-    @IBAction func noButtonClicked(_ sender: Any) {
+    
+    @IBAction private func noButtonClicked(_ sender: Any) {
         let currentQuestion = questions[currentQuestionIndex]
         let givenAnswer = false
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
-  
-   
+    
+    private func setImageBorder(isAnswered: Bool) {
+        if isAnswered {
+            imageView.layer.borderWidth = 1
+            imageView.layer.borderColor = UIColor.green.cgColor
+        } else {
+            imageView.layer.borderWidth = 0
+            imageView.layer.borderColor = UIColor.clear.cgColor
+        }
+    }
+    
+    
     private func showCurrentQuestion() {
         let currentQuestion = questions[currentQuestionIndex]
         let quizStep = convert(model: currentQuestion)
         
+        setImageBorder(isAnswered: false)
+        
         imageView.image = UIImage(named: currentQuestion.image)
         show(quiz: quizStep)
     }
-   
+    
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         let questionStep = QuizStepViewModel(
             image: UIImage(named: model.image) ?? UIImage(),
@@ -113,16 +129,18 @@ final class MovieQuizViewController: UIViewController {
             questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
         return questionStep
     }
+    
     private func show(quiz step: QuizStepViewModel) {
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
-        imageView.layer.borderWidth = 1
-        imageView.layer.borderColor = UIColor.white.cgColor
     }
+    
     private func showAnswerResult(isCorrect: Bool) {
         let title = isCorrect ? "Правильно!" : "Неправильно!"
         let message = isCorrect ? "Вы ответили правильно!" : "Вы ответили неправильно."
+        
+        setImageBorder(isAnswered: true)
         
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
@@ -133,7 +151,7 @@ final class MovieQuizViewController: UIViewController {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrect ? UIColor.YPGreen?.cgColor : UIColor.YPRed?.cgColor
-       
+        
         let action = UIAlertAction(title: "OK", style: .default) { _ in
             DispatchQueue.main.asyncAfter(deadline: .now()+1.0){
                 self.showNextQuestionOrResults()
