@@ -1,14 +1,17 @@
 import UIKit
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
-    
+    private enum Fonts {
+        static let base = UIFont(name: "YSDisplay-Medium", size: 20) ?? UIFont.systemFont(ofSize:20, weight: .medium)
+        static let bold = UIFont(name: "YSDisplay-Bold", size: 23) ?? UIFont.systemFont(ofSize:23, weight: .bold)
+    }
     
     
     // MARK: - Lifecycle
     override func viewDidLoad(){
         super.viewDidLoad()
         
-    
+       
         let questionFactory = QuestionFactory()
         questionFactory.delegate = self
         self.questionFactory = questionFactory
@@ -17,20 +20,19 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
         UserDefaults.standard.set(true, forKey: "viewDidLoad")
         
         showCurrentQuestion()
-        lazy var baseFont = UIFont(name: "YSDisplay-Medium", size: 20)
-        lazy var boldFont = UIFont (name:"YSDisplay-Bold", size: 23)
-        yesButton.titleLabel?.font = baseFont
-        noButton.titleLabel?.font = baseFont
-        textLabel.font = boldFont
-        counterLabel.font = baseFont
+        yesButton.titleLabel?.font = Fonts.base
+        noButton.titleLabel?.font = Fonts.base
+        textLabel.font = Fonts.bold
+        counterLabel.font = Fonts.base
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 1
         imageView.layer.borderColor = UIColor.white.cgColor
         imageView.layer.cornerRadius = 20
-        questionLabel.font = baseFont
+        questionLabel.font = Fonts.base
         setImageBorder(isAnswered: false)
         
     }
+    
 
     var statisticService: StatisticServiceProtocol = StatisticService()
     private var alertPresenter = AlertPresenter()
@@ -106,30 +108,18 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
         return questionStep
     }
-    
     private func showAnswerResult(isCorrect: Bool) {
-        let title = isCorrect ? "Правильно!" : "Неправильно!"
-        let message = isCorrect ? "Вы ответили правильно!" : "Вы ответили неправильно."
-
-        setImageBorder(isAnswered: true)
-        
-        let alertModel = AlertModel(title: title, message: message, buttonText: "OK", completion: {[weak self] in
-            guard let self = self else
-            {return}
-            DispatchQueue.main.asyncAfter(deadline: .now()+1.0){
-                self.showNextQuestionOrResults()
-            }
-        })
-        
         if isCorrect {
             correctAnswers += 1
         }
+        setImageBorder(isAnswered: true)
         
+        DispatchQueue.main.asyncAfter(deadline: .now()+1.0){
+                self.showNextQuestionOrResults()
+            }
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrect ? UIColor.YPGreen?.cgColor : UIColor.YPRed?.cgColor
-    
-        alertPresenter.show(in: self, model: alertModel)
     }
     
     private func showNextQuestionOrResults() {
@@ -162,5 +152,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
             })
         alertPresenter.show(in: self, model: alertModel)
         }
-    }
+}
+
 

@@ -6,7 +6,7 @@ import UIKit
 
 class QuestionFactory: QuestionFactoryProtocol {
    var currentQuestionIndex: Int = 0
-    var delegate: QuestionFactoryDelegate?
+    weak var delegate: QuestionFactoryDelegate?
     
     private let questions: [QuizQuestion] = [
             QuizQuestion(
