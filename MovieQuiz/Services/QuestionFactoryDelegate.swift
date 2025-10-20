@@ -9,6 +9,8 @@ import Foundation
 import UIKit
 
 protocol QuestionFactoryDelegate: AnyObject {
+    func didLoadDataFromServer()
+    func didFailToLoadData(with error: Error)
     
     // MARK: - QuestionFactoryDelegate
 
