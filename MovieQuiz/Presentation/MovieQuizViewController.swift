@@ -1,6 +1,7 @@
 import UIKit
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
+    
     private enum Fonts {
         static let base = UIFont(name: "YSDisplay-Medium", size: 20) ?? UIFont.systemFont(ofSize:20, weight: .medium)
         static let bold = UIFont(name: "YSDisplay-Bold", size: 23) ?? UIFont.systemFont(ofSize:23, weight: .bold)
@@ -110,13 +111,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
     }
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else {
-              return
-          }
-
-          currentQuestion = question
-          let viewModel = presenter.convert(model: question)
-          show(quiz: viewModel)
+        presenter.didRecieveNextQuestion(question: question)
     }
     
     func show(quiz: QuizStepViewModel){
@@ -124,7 +119,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
         counterLabel.text = quiz.questionNumber
         imageView.layer.borderColor = UIColor.clear.cgColor
         imageView.layer.borderWidth = 1
-        
     }
   
     
@@ -139,12 +133,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
         }
         setImageBorder(isAnswered: true)
         
-        DispatchQueue.main.asyncAfter(deadline: .now()+1.0){
-                self.showNextQuestionOrResults()
-            }
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrect ? UIColor.YPGreen?.cgColor : UIColor.YPRed?.cgColor
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+                  guard let self = self else { return }
+                  self.presenter.correctAnswers = self.correctAnswers
+                  self.presenter.questionFactory = self.questionFactory
+                  self.presenter.showNextQuestionOrResults()
+              }
     }
     
     private func showNextQuestionOrResults() {

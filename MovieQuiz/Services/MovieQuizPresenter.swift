@@ -13,6 +13,8 @@ final class MovieQuizPresenter {
     
     var currentQuestion: QuizQuestion?
     weak var viewController: MovieQuizViewController?
+    var correctAnswers: Int = 0
+    var questionFactory: QuestionFactoryProtocol?
    
      func convert(model: QuizQuestion) -> QuizStepViewModel {
         let questionStep = QuizStepViewModel(
@@ -40,6 +42,18 @@ final class MovieQuizPresenter {
         viewController?.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
+    func didRecieveNextQuestion(question: QuizQuestion?) {
+           guard let question = question else {
+               return
+           }
+           
+           currentQuestion = question
+           let viewModel = convert(model: question)
+           DispatchQueue.main.async { [weak self] in
+               self?.viewController?.show(quiz: viewModel)
+           }
+       }
+    
     func isLastQuestion() -> Bool {
            currentQuestionIndex == questionsAmount - 1
        }
@@ -51,5 +65,15 @@ final class MovieQuizPresenter {
        func switchToNextQuestion() {
            currentQuestionIndex += 1
        }
+    
+    func showNextQuestionOrResults() {
+        if self.isLastQuestion() {
+            viewController?.endGame()
+        } else {
+            self.switchToNextQuestion()
+            questionFactory?.requestNextQuestion()
+        }
+    }
+
 }
 
