@@ -11,7 +11,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
     override func viewDidLoad(){
         super.viewDidLoad()
         
-       
         let questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         self.questionFactory = questionFactory
         
@@ -41,9 +40,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
     private var questionFactory: QuestionFactoryProtocol?
     private let questionsAmount: Int = 10
     private var currentQuestion: QuizQuestion?
-    
+    private var presenter: MovieQuizPresenter = MovieQuizPresenter()
+
     private var correctAnswers = 0
-    private var currentQuestionIndex = 0
 
     @IBOutlet weak var yesButton: UIButton!
     @IBOutlet weak var counterLabel: UILabel!
@@ -91,7 +90,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
             guard let self = self else {
                 return
             }
-            self.currentQuestionIndex = 0
+            presenter.resetQuestionIndex()
             self.correctAnswers = 0
             
             self.questionFactory?.requestNextQuestion()
@@ -120,7 +119,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
           }
 
           currentQuestion = question
-          let viewModel = convert(model: question)
+          let viewModel = presenter.convert(model: question)
           show(quiz: viewModel)
     }
     
@@ -137,13 +136,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
         questionFactory?.requestNextQuestion()
     }
     
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        let questionStep = QuizStepViewModel(
-            image: UIImage(data: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
-        return questionStep
-    }
+   
     private func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
             correctAnswers += 1
@@ -159,10 +152,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
     }
     
     private func showNextQuestionOrResults() {
-        if currentQuestionIndex == questionsAmount - 1 {
+        if presenter.isLastQuestion() {
           endGame()
         } else {
-            currentQuestionIndex += 1
+            presenter.switchToNextQuestion()
             showCurrentQuestion()
         }
     }
@@ -181,7 +174,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
             buttonText: "Начать заново",
             completion: {[weak self] in
                 guard let self = self else { return }
-                self.currentQuestionIndex = 0
+                presenter.resetQuestionIndex()
                 self.correctAnswers = 0
                 self.questionFactory?.resetQuestionIndex()
                 self.showCurrentQuestion()
