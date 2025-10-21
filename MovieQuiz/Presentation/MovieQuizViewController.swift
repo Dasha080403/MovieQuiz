@@ -92,7 +92,12 @@ final class MovieQuizViewController: UIViewController{
         }
     }
     
-  
+    func highlightImageBorder(isCorrectAnswer: Bool) {
+           imageView.layer.masksToBounds = true
+           imageView.layer.borderWidth = 8
+        imageView.layer.borderColor = isCorrectAnswer ? UIColor.YPGreen?.cgColor : UIColor.YPRed?.cgColor
+       }
+       
     
     func show(quiz: QuizStepViewModel){
         imageView.image = quiz.image
@@ -101,38 +106,9 @@ final class MovieQuizViewController: UIViewController{
         imageView.layer.borderWidth = 1
     }
   
-    func showAnswerResult(isCorrect: Bool) {
-        if isCorrect {
-            presenter.correctAnswers += 1
-        }
-        setImageBorder(isAnswered: true)
-        
-        imageView.layer.masksToBounds = true
-        imageView.layer.borderWidth = 8
-        imageView.layer.borderColor = isCorrect ? UIColor.YPGreen?.cgColor : UIColor.YPRed?.cgColor
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-                  guard let self = self else { return }
-                  self.presenter.showNextQuestionOrResults()
-              }
-    }
-    
-    private func showNextQuestionOrResults() {
-        if presenter.isLastQuestion() {
-          endGame()
-        } else {
-            presenter.switchToNextQuestion()
-            presenter.showNextQuestionOrResults()
-        }
-    }
     func endGame() {
         statisticService.store(correct: presenter.correctAnswers, total: questionsAmount )
-        let message = """
-            Ваш результат: \(presenter.correctAnswers) правильных ответов
-            Рекорд: \(statisticService.bestGame.correct) из \(questionsAmount) (дата: \(statisticService.bestGame.date))
-            Сыграно квизов: \(statisticService.allGamesCount)
-            Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%
-            """
+        let message = presenter.makeResultsMessage()
         
         let alertModel = AlertModel(
             title: "Игра окончена",
