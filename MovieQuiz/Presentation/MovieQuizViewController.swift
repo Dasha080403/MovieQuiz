@@ -98,6 +98,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
         alertPresenter.show(in: self, model: alertModel)
     }
     
+    
     private func showLoadingIndicator() {
         activityIndicator.isHidden = false
         activityIndicator.startAnimating()
