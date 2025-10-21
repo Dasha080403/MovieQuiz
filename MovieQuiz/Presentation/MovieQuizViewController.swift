@@ -14,6 +14,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
         let questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         self.questionFactory = questionFactory
         
+        presenter.viewController = self
+        
         print(NSHomeDirectory())
         UserDefaults.standard.set(true, forKey: "viewDidLoad")
         
@@ -54,20 +56,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     @IBAction private func yesButtonClicked(_ sender: Any) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        let givenAnswer = true
-        
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        presenter.currentQuestion = currentQuestion
+        presenter.yesButtonClicked()
     }
     
     @IBAction private func noButtonClicked(_ sender: Any) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        let givenAnswer = false
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        presenter.currentQuestion = currentQuestion
+        presenter.noButtonClicked()
     }
     
     func didLoadDataFromServer() {
@@ -138,7 +133,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
     }
     
    
-    private func showAnswerResult(isCorrect: Bool) {
+    func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
             correctAnswers += 1
         }
