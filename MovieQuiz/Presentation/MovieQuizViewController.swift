@@ -33,7 +33,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         setImageBorder(isAnswered: false)
         
         showLoadingIndicator()
-        presenter.questionFactory!.loadData()
+        presenter.questionFactory?.loadData()
         
     }
     
@@ -55,12 +55,10 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     @IBAction private func yesButtonClicked(_ sender: Any) {
-        //presenter.currentQuestion = currentQuestion
         presenter.yesButtonClicked()
     }
     
     @IBAction private func noButtonClicked(_ sender: Any) {
-        //presenter.currentQuestion = currentQuestion
         presenter.noButtonClicked()
     }
     

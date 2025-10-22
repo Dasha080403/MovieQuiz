@@ -24,7 +24,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
    
     init(viewController: MovieQuizViewControllerProtocol) {
         
-        self.viewController = viewController as! MovieQuizViewController
+        self.viewController = viewController as? MovieQuizViewController
           
         statisticService = StatisticService()
 
@@ -63,7 +63,11 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
     
     func isLastQuestion() -> Bool {
-           currentQuestionIndex == questionsAmount - 1
+           currentQuestionIndex == questionsAmount
+       }
+    
+    func isFirstQuestion() -> Bool {
+           currentQuestionIndex == 0
        }
        
        func resetQuestionIndex() {
@@ -78,7 +82,6 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         if self.isLastQuestion() {
             viewController?.endGame()
         } else {
-            self.switchToNextQuestion()
             questionFactory?.requestNextQuestion()
         }
     }
@@ -117,6 +120,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
                 guard let self = self else { return }
                 self.showNextQuestionOrResults()
             }
+        self.switchToNextQuestion()
         }
 
     
