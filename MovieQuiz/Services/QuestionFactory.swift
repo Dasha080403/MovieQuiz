@@ -5,11 +5,11 @@ import UIKit
     
 
 class QuestionFactory: QuestionFactoryProtocol {
+    
   
     
     private let moviesLoader: MoviesLoading
     private weak var delegate: QuestionFactoryDelegate?
-    var currentQuestionIndex: Int = 0
     private var movies: [MostPopularMovie] = []
     
     init(moviesLoader: MoviesLoading, delegate: QuestionFactoryDelegate?) {
@@ -61,10 +61,6 @@ class QuestionFactory: QuestionFactoryProtocol {
                 self.delegate?.didReceiveNextQuestion(question: question)
             }
         }
-    }
-    
-    func resetQuestionIndex() {
-        currentQuestionIndex = 0
     }
 }
    
