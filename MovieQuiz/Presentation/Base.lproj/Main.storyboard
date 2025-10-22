@@ -40,6 +40,7 @@
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="n76-GF-J9R" userLabel="Preview Image">
                                         <rect key="frame" x="0.0" y="39" width="362" height="543"/>
                                         <color key="backgroundColor" name="YPWhite"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="Poster"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="n76-GF-J9R" secondAttribute="height" multiplier="2:3" id="BBK-Kq-wF4"/>
                                         </constraints>

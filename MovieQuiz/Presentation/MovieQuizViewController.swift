@@ -1,6 +1,9 @@
 import UIKit
+import Foundation
 
-final class MovieQuizViewController: UIViewController{
+
+final class MovieQuizViewController: UIViewController, MovieQuizViewControllerProtocol {
+    
     
     private enum Fonts {
         static let base = UIFont(name: "YSDisplay-Medium", size: 20) ?? UIFont.systemFont(ofSize:20, weight: .medium)
@@ -105,7 +108,7 @@ final class MovieQuizViewController: UIViewController{
         imageView.layer.borderColor = UIColor.clear.cgColor
         imageView.layer.borderWidth = 1
     }
-  
+    
     func endGame() {
         statisticService.store(correct: presenter.correctAnswers, total: questionsAmount )
         let message = presenter.makeResultsMessage()
