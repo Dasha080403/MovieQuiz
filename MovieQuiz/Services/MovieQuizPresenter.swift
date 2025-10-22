@@ -56,7 +56,8 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         }
                 
         let givenAnswer = isYes
-                
+         
+        
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
@@ -106,8 +107,9 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         }
     
     func showAnswerResult(isCorrect: Bool) {
-        didAnswer(isYes: isCorrect)
-            
+        if isCorrect {
+            correctAnswers+=1
+        }
         viewController?.highlightImageBorder(isCorrectAnswer: isCorrect)
             
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
@@ -134,7 +136,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             return
         }
         
-        currentQuestion = question
+        self.currentQuestion = question
         let viewModel = convert(model: question)
         DispatchQueue.main.async { [weak self] in
             self?.viewController?.show(quiz: viewModel)
